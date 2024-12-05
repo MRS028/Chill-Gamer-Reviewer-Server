@@ -41,6 +41,26 @@ async function run() {
       const result = await reviewCollection.insertOne(newReview);
       res.send(result);
     });
+
+    app.put("/allReviews/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedReview = req.body;
+      const reviewUpdated = {
+        $set: {
+          gameCover: updatedReview.gameCover,
+          gameTitle: updatedReview.gameTitle,
+          publishingYear: updatedReview.publishingYear,
+          reviewDescription: updatedReview.reviewDescription,
+          rating: updatedReview.rating,
+          genre: updatedReview.genre,
+        },
+      };
+      const result = await reviewCollection.updateOne(filter, reviewUpdated);
+
+      res.send(result);
+    });
     //  watchlist
     app.post("/watchlist", async (req, res) => {
       try {
@@ -49,12 +69,9 @@ async function run() {
 
         const existingGame = await watchlistCollection.findOne({
           gameTitle: newWatchList.gameTitle,
-        });
-        const existingGame2 = await watchlistCollection.findOne({
           userEmail: newWatchList.userEmail,
         });
-
-        if (existingGame && existingGame2) {
+        if (existingGame) {
           return res
             .status(400)
             .send({ message: "This game is already in your watchlist." });
@@ -87,17 +104,19 @@ async function run() {
 
       res.send(result);
     });
- //watchlist data add
+    //watchlist data add
     app.get("/watchlist", async (req, res) => {
       const cursor = watchlistCollection.find();
       const result = await cursor.toArray();
       res.send(result);
-    }); 
- //watchlist data deleted
- 
-
-
-
+    });
+    //watchlist data deleted
+    app.delete("/watchlist/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await watchlistCollection.deleteOne(query);
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
