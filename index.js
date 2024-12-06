@@ -69,8 +69,6 @@ async function run() {
             .sort({ rating: -1 }) 
             .limit(6) 
             .toArray();
-      
-          // Ensure rating is a number
           const sanitizedGames = topGames.map((game) => ({
             ...game,
             rating: Number(game.rating) || 0,
