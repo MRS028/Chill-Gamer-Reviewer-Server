@@ -61,6 +61,29 @@ async function run() {
 
       res.send(result);
     });
+    // Get top-rated games
+    app.get("/highestRatedGames", async (req, res) => {
+        try {
+          const topGames = await reviewCollection
+            .find({})
+            .sort({ rating: -1 }) 
+            .limit(6) 
+            .toArray();
+      
+          // Ensure rating is a number
+          const sanitizedGames = topGames.map((game) => ({
+            ...game,
+            rating: Number(game.rating) || 0,
+          }));
+      
+          res.send(sanitizedGames);
+        } catch (error) {
+          console.error("Error fetching highest-rated games:", error);
+          res.status(500).send({ message: "Server error" });
+        }
+      });
+      
+
     //  watchlist
     app.post("/watchlist", async (req, res) => {
       try {
