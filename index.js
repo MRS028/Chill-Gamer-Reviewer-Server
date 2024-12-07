@@ -7,7 +7,17 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:5173', 
+    'https://chill-gamer-b10a10.web.app',
+    'https://chill-gamer-server-sigma.vercel.app',
+    'https://chill-gamer-b10a10.firebaseapp.com'
+  ],
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization'], 
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], 
+}));
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.q3w3t.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -24,7 +34,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
     const reviewCollection = client.db("ReviewDB").collection("newReview");
 
     const watchlistCollection = client.db("ReviewDB").collection("watchlist");
@@ -61,25 +71,27 @@ async function run() {
 
       res.send(result);
     });
-    // Get top-rated games
+    // highest rated data
     app.get("/highestRatedGames", async (req, res) => {
-        try {
-          const topGames = await reviewCollection
-            .find({})
-            .sort({ rating: -1 }) 
-            .limit(6) 
-            .toArray();
-          const sanitizedGames = topGames.map((game) => ({
-            ...game,
-            rating: Number(game.rating) || 0,
-          }));
-      
-          res.send(sanitizedGames);
-        } catch (error) {
-          console.error("Error fetching highest-rated games:", error);
-          res.status(500).send({ message: "Server error" });
-        }
-      });
+      try {
+        const topGames = await reviewCollection
+          .find({})
+          .sort({ rating: -1 }) 
+          .limit(6) 
+          .toArray();
+    
+        const sanitizedGames = topGames.map((game) => ({
+          ...game,
+          rating: Number(game.rating) || 0,
+        }));
+    
+        res.send(sanitizedGames);
+      } catch (error) {
+        console.error("Error fetching highest-rated games:", error);
+        res.status(500).send({ message: "Server error" });
+      }
+    });
+    
       
 
     //  watchlist
