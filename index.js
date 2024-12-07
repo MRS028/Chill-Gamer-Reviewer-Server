@@ -7,17 +7,19 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors({
-  origin: [
-    'http://localhost:5173', 
-    'https://chill-gamer-b10a10.web.app',
-    'https://chill-gamer-server-sigma.vercel.app',
-    'https://chill-gamer-b10a10.firebaseapp.com'
-  ],
-  credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization'], 
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], 
-}));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://chill-gamer-b10a10.web.app",
+      "https://chill-gamer-server-sigma.vercel.app",
+      "https://chill-gamer-b10a10.firebaseapp.com",
+    ],
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  })
+);
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.q3w3t.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -67,32 +69,31 @@ async function run() {
           genre: updatedReview.genre,
         },
       };
-      const result = await reviewCollection.updateOne(filter, reviewUpdated);
+      const result = await reviewCollection.updateOne(
+        filter,
+        reviewUpdated,
+        options
+      );
 
       res.send(result);
     });
     // highest rated data
     app.get("/highestRatedGames", async (req, res) => {
-      try {
+     
         const topGames = await reviewCollection
           .find({})
-          .sort({ rating: -1 }) 
-          .limit(6) 
+          .sort({ rating: -1 })
+          .limit(6)
           .toArray();
-    
-        const sanitizedGames = topGames.map((game) => ({
+
+        const reviewGames = topGames.map((game) => ({
           ...game,
           rating: Number(game.rating) || 0,
         }));
-    
-        res.send(sanitizedGames);
-      } catch (error) {
-        console.error("Error fetching highest-rated games:", error);
-        res.status(500).send({ message: "Server error" });
-      }
-    });
-    
+
+        res.send(reviewGames);
       
+    });
 
     //  watchlist
     app.post("/watchlist", async (req, res) => {
