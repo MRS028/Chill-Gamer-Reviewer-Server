@@ -47,8 +47,21 @@ async function run() {
       res.send(result);
     });
 
+    // highest rated data
+    app.get("/highestRatedGames", async (req, res) => {
+      const cursor = reviewCollection.find();
+
+      const topGames = await cursor.sort({ rating: -1 }).limit(6).toArray();
+
+      topGames.map((game) => {
+        game.rating = Number(game.rating);
+      });
+      res.send(topGames);
+    });
+
     app.post("/allReviews", async (req, res) => {
       const newReview = req.body;
+      newReview.rating = Number(newReview.rating);
       console.log(newReview);
       const result = await reviewCollection.insertOne(newReview);
       res.send(result);
@@ -77,22 +90,21 @@ async function run() {
 
       res.send(result);
     });
-    // highest rated data
-    app.get("/highestRatedGames", async (req, res) => {
-     
-        const topGames = await reviewCollection
-          .find({})
-          .sort({ rating: -1 })
-          .limit(6)
-          .toArray();
 
-        const reviewGames = topGames.map((game) => ({
-          ...game,
-          rating: Number(game.rating) || 0,
-        }));
+    //recent
+    app.get("/recentReviews", async (req, res) => {
+      const recentReviews = await reviewCollection
+        .find({})
+        .sort({ createdAt: +1 })
+        .limit(6)
+        .toArray();
 
-        res.send(reviewGames);
-      
+      const formattedReviews = recentReviews.map((review) => ({
+        ...review,
+        rating: Number(review.rating) || 0,
+      }));
+
+      res.send(formattedReviews);
     });
 
     //  watchlist
