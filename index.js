@@ -14,6 +14,7 @@ app.use(
       "https://chill-gamer-b10a10.web.app",
       "https://chill-gamer-server-sigma.vercel.app",
       "https://chill-gamer-b10a10.firebaseapp.com",
+      "https://chill-gamer-reviewing-application.netlify.app",
     ],
     credentials: true,
     allowedHeaders: ["Content-Type", "Authorization"],

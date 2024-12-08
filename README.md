@@ -5,6 +5,7 @@ The Chill Gamer Server is a RESTful API built using Node.js, Express, and MongoD
 You can access the live version of the application here:
 
 #[**Chill Gamer Live Demo**](https://chill-gamer-b10a10.firebaseapp.com)
+#[**Chill Gamer Live Demo**](https://chill-gamer-reviewing-application.netlify.app)
 
 ---
 
